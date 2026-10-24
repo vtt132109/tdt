@@ -188,7 +188,7 @@
     if (!text || text.length > 260) return false;
     if (!/[=≠≈≤≥∂∇∫∮Σ√·×^_]|[\u0370-\u03ff]/.test(text)) return false;
     if (/[ăâđêôơưĂÂĐÊÔƠƯ]/u.test(text)) return false;
-    if (/[^\x00-\x7F\u00A0-\u00BF\u0370-\u03FF\u2000-\u206F\u2070-\u209F\u2200-\u22FF]/u.test(text)) {
+    if (/[^\x00-\x7F\u00A0-\u00BF\u00D7\u0370-\u03FF\u2000-\u206F\u2070-\u209F\u2200-\u22FF]/u.test(text)) {
       return false;
     }
     const tokens = text.split(/\s+/);

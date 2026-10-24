@@ -232,13 +232,13 @@
     "difficulty": "medium",
     "question": "Lực điện từ tác dụng lên điện tích q chuyển động với vận tốc v trong điện trường E và từ trường B là:",
     "options": [
-      "F = qE + qv·B",
+      "F = qE + qv×E",
       "F = qE + qv×B",
       "F = qE − qv×B",
       "F = q(E + v)·B"
     ],
     "answer": 1,
-    "explain": "Lực Lorentz gồm thành phần điện qE và thành phần từ qv×B, nên F = qE + qv×B. Phương án A dùng tích vô hướng (cho kết quả vô hướng), phương án C sai dấu, phương án D sai cả cấu trúc vectơ.",
+    "explain": "Lực Lorentz gồm thành phần điện qE và thành phần từ qv×B, nên F = qE + qv×B. Phương án A dùng E thay cho B trong tích có hướng, phương án C sai dấu, phương án D sai cả cấu trúc vectơ.",
     "source": "Trang 27"
   },
   {
