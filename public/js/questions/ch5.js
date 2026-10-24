@@ -15,7 +15,8 @@
     ],
     "answer": 1,
     "explain": "TĐTBT có các đại lượng đặc trưng biến thiên theo cả không gian lẫn thời gian, được mô tả bởi hệ phương trình Maxwell. Điện trường và từ trường liên hệ chặt chẽ, có thể chuyển hóa lẫn nhau, khác với trường tĩnh.",
-    "source": "Trang 3"
+    "source": "Trang 3",
+    "topicGroup": "Maxwell & dòng dịch"
   },
   {
     "id": "c5-02",
@@ -31,7 +32,8 @@
     ],
     "answer": 2,
     "explain": "∂D/∂t là mật độ dòng điện dịch, xuất hiện khi cảm ứng điện D biến thiên theo thời gian; J là mật độ dòng điện dẫn. Số hạng này khép kín phương trình liên tục và cho phép sóng điện từ lan truyền ngay cả khi không có dòng dẫn.",
-    "source": "Trang 3"
+    "source": "Trang 3",
+    "topicGroup": "Maxwell & dòng dịch"
   },
   {
     "id": "c5-03",
@@ -47,7 +49,8 @@
     ],
     "answer": 0,
     "explain": "Định luật bảo toàn điện tích: điện tích rời khỏi một thể tích bằng độ giảm điện tích chứa trong thể tích đó, nên div J = −∂ρ/∂t. Dấu trừ thể hiện ρ giảm khi có dòng điện chảy ra.",
-    "source": "Trang 4"
+    "source": "Trang 4",
+    "topicGroup": "Maxwell & dòng dịch"
   },
   {
     "id": "c5-04",
@@ -63,7 +66,8 @@
     ],
     "answer": 3,
     "explain": "Vectơ Poynting P = E × H; chiều của P là chiều truyền năng lượng, độ lớn là công suất trên một đơn vị diện tích vuông góc phương truyền. Công suất gửi qua mặt S là P = ∫_S (E × H)·ds.",
-    "source": "Trang 4"
+    "source": "Trang 4",
+    "topicGroup": "Bài toán sóng"
   },
   {
     "id": "c5-05",
@@ -79,7 +83,8 @@
     ],
     "answer": 2,
     "explain": "Với quy ước e^(jωt), đạo hàm theo t đưa xuống thừa số jω, nên ∂/∂t ↔ jω và ∂²/∂t² ↔ −ω². Đây là cơ sở để chuyển hệ phương trình Maxwell sang dạng phức.",
-    "source": "Trang 12"
+    "source": "Trang 12",
+    "topicGroup": "Sóng phẳng & thông số"
   },
   {
     "id": "c5-06",
@@ -95,7 +100,8 @@
     ],
     "answer": 0,
     "explain": "Đạo hàm ∂D/∂t chuyển thành jωD nên rot H = J + jωD, trong đó các đại lượng là biên độ phức. Phương trình rot E tương ứng là rot E = −jωB.",
-    "source": "Trang 13"
+    "source": "Trang 13",
+    "topicGroup": "Maxwell & dòng dịch"
   },
   {
     "id": "c5-07",
@@ -111,7 +117,8 @@
     ],
     "answer": 1,
     "explain": "Sóng phẳng đơn sắc có mặt đồng pha là mặt phẳng; E ⊥ H và cả hai cùng vuông góc với phương truyền (sóng ngang TEM). Ngoài ra E, H biến thiên điều hòa cùng tần số và chỉ phụ thuộc tọa độ dọc theo phương truyền.",
-    "source": "Trang 17–18"
+    "source": "Trang 17–18",
+    "topicGroup": "Sóng phẳng & thông số"
   },
   {
     "id": "c5-08",
@@ -127,7 +134,8 @@
     ],
     "answer": 3,
     "explain": "Trong điện môi lý tưởng K = jβ nên α = 0; nghiệm sóng chỉ có thừa số pha e^(−jβz), không có thừa số tắt dần e^(−αz). Vì vậy biên độ sóng giữ nguyên dọc theo phương truyền.",
-    "source": "Trang 23"
+    "source": "Trang 23",
+    "topicGroup": "Sóng phẳng & thông số"
   },
   {
     "id": "c5-09",
@@ -143,7 +151,8 @@
     ],
     "answer": 1,
     "explain": "Vật dẫn lý tưởng được coi là có ε = 0, γ ≠ 0, nên ε̃ = ε − jγ/ω ≈ −jγ/ω. Khi đó dòng dẫn lấn át dòng điện dịch và quyết định sự tắt dần của sóng.",
-    "source": "Trang 26"
+    "source": "Trang 26",
+    "topicGroup": "Môi trường vật dẫn"
   },
   {
     "id": "c5-10",
@@ -159,7 +168,8 @@
     ],
     "answer": 0,
     "explain": "z₀ = 1/α là khoảng cách tính từ mặt môi trường dẫn theo phương truyền, trên đó biên độ sóng giảm đi e lần (còn khoảng 37% giá trị ban đầu). Đây là thước đo mức độ tắt dần của sóng trong vật dẫn.",
-    "source": "Trang 33"
+    "source": "Trang 33",
+    "topicGroup": "Môi trường vật dẫn"
   },
   {
     "id": "c5-11",
@@ -175,7 +185,8 @@
     ],
     "answer": 3,
     "explain": "Từ B = rot A và rot E = −∂B/∂t suy ra rot(E + ∂A/∂t) = 0, do đó E + ∂A/∂t = −grad φ, tức E = −grad φ − ∂A/∂t. Số hạng −∂A/∂t thể hiện tính chất xoáy của điện trường biến thiên.",
-    "source": "Trang 6"
+    "source": "Trang 6",
+    "topicGroup": "Maxwell & dòng dịch"
   },
   {
     "id": "c5-12",
@@ -191,7 +202,8 @@
     ],
     "answer": 0,
     "explain": "Điều kiện Lorentz là div A = −με ∂φ/∂t, viết lại thành div A + με ∂φ/∂t = 0. Nhờ đó phương trình sóng của A và φ tách rời nhau, mỗi thế thỏa một phương trình d'Alembert riêng.",
-    "source": "Trang 8"
+    "source": "Trang 8",
+    "topicGroup": "Maxwell & dòng dịch"
   },
   {
     "id": "c5-13",
@@ -207,7 +219,8 @@
     ],
     "answer": 0,
     "explain": "Dùng rot rot A = grad div A − ΔA kết hợp điều kiện Lorentz, thu được ΔA − με ∂²A/∂t² = −μJ. Vế phải −μJ cho thấy dòng điện là nguồn của thế vectơ; hệ số με xác định tốc độ truyền sóng.",
-    "source": "Trang 8–9"
+    "source": "Trang 8–9",
+    "topicGroup": "Maxwell & dòng dịch"
   },
   {
     "id": "c5-14",
@@ -223,7 +236,8 @@
     ],
     "answer": 1,
     "explain": "Từ rot H = γE + jωεE = jω(ε − jγ/ω)E, đặt ε̃ = ε − jγ/ω để gộp dòng dẫn vào cùng số hạng với dòng điện dịch. Phần ảo −γ/ω đặc trưng cho tổn hao do dòng dẫn.",
-    "source": "Trang 14"
+    "source": "Trang 14",
+    "topicGroup": "Sóng phẳng & thông số"
   },
   {
     "id": "c5-15",
@@ -239,7 +253,8 @@
     ],
     "answer": 3,
     "explain": "Thay ∂²/∂t² ↔ −ω² và ε → ε̃ vào phương trình sóng theo thời gian ΔE − με ∂²E/∂t² = 0, ta được ΔE + ω²με̃E = 0; tương tự cho H. Dấu cộng và hệ số ω² là đặc trưng của phương trình Helmholtz.",
-    "source": "Trang 16"
+    "source": "Trang 16",
+    "topicGroup": "Maxwell & dòng dịch"
   },
   {
     "id": "c5-16",
@@ -255,7 +270,8 @@
     ],
     "answer": 2,
     "explain": "Với K = jβ và K² = −ω²με, suy ra β = ω√(με). Hệ số pha cho biết pha của sóng thay đổi bao nhiêu rad trên một đơn vị dài và liên hệ với bước sóng qua β = 2π/λ.",
-    "source": "Trang 24"
+    "source": "Trang 24",
+    "topicGroup": "Sóng phẳng & thông số"
   },
   {
     "id": "c5-17",
@@ -271,7 +287,8 @@
     ],
     "answer": 1,
     "explain": "v = ω/β = 1/√(με) = c/√(μrεr), với c là vận tốc ánh sáng trong chân không. Vì μr, εr ≥ 1 nên trong môi trường vật chất v ≤ c; đẳng thức v = c chỉ xảy ra trong chân không.",
-    "source": "Trang 24"
+    "source": "Trang 24",
+    "topicGroup": "Sóng phẳng & thông số"
   },
   {
     "id": "c5-18",
@@ -287,7 +304,8 @@
     ],
     "answer": 2,
     "explain": "Bước sóng là quãng đường sóng truyền trong một chu kỳ: λ = vT = v/f = 2π/β. Vì v và β đều phụ thuộc môi trường, cùng một tần số sóng sẽ có bước sóng khác nhau trong các môi trường khác nhau.",
-    "source": "Trang 24"
+    "source": "Trang 24",
+    "topicGroup": "Sóng phẳng & thông số"
   },
   {
     "id": "c5-19",
@@ -303,7 +321,8 @@
     ],
     "answer": 3,
     "explain": "Với điện môi lý tưởng, Z_C = E⁺/H⁺ = jωμ/K = √(μ/ε), là số thực nên E và H đồng pha. Trong chân không Z_C ≈ 377 Ω; đáp án có góc 45° chỉ đúng cho môi trường dẫn.",
-    "source": "Trang 24"
+    "source": "Trang 24",
+    "topicGroup": "Sóng phẳng & thông số"
   },
   {
     "id": "c5-20",
@@ -319,7 +338,8 @@
     ],
     "answer": 0,
     "explain": "Trong vật dẫn K = √(jωμγ) = (1 + j)√(ωμγ/2) = α + jβ, do đó α = β = √(ωμγ/2). Sóng vừa bị tắt dần theo e^(−αz) vừa dịch pha theo βz; đáp án α = 0 chỉ đúng cho điện môi lý tưởng.",
-    "source": "Trang 27, 32"
+    "source": "Trang 27, 32",
+    "topicGroup": "Môi trường vật dẫn"
   },
   {
     "id": "c5-21",
@@ -335,7 +355,8 @@
     ],
     "answer": 2,
     "explain": "Z_C = jωμ/K = √(jωμ/γ) = √(ωμ/γ)∠45°. Góc 45° làm H chậm pha π/4 so với E; độ lớn √(ωμ/γ) tăng theo căn bậc hai của tần số, khác với điện môi lý tưởng nơi Z_C là số thực.",
-    "source": "Trang 29, 32"
+    "source": "Trang 29, 32",
+    "topicGroup": "Sóng phẳng & thông số"
   },
   {
     "id": "c5-22",
@@ -351,7 +372,8 @@
     ],
     "answer": 1,
     "explain": "Từ điều kiện biên E_t + E_p = E_k và H_t + H_p = H_k, với H = E/Z_C, suy ra K_Ep = (Z_C2 − Z_C1)/(Z_C1 + Z_C2). Đáp án 0 là hệ số phản xạ từ trường K_Hp, còn đáp án 2 là hệ số khúc xạ điện trường K_Ek.",
-    "source": "Trang 38"
+    "source": "Trang 38",
+    "topicGroup": "Phản xạ – khúc xạ"
   },
   {
     "id": "c5-23",
@@ -367,7 +389,8 @@
     ],
     "answer": 0,
     "explain": "ω = 2πf ≈ 6,28×10⁶ rad/s nên ωμγ ≈ 3,16×10⁸. Khi đó z₀ = √(2/(ωμγ)) ≈ 7,96×10⁻⁵ m ≈ 0,08 mm. Ở tần số 1 MHz, sóng chỉ xuyên vào vật dẫn điện tốt một lớp rất mỏng.",
-    "source": "Trang 33"
+    "source": "Trang 33",
+    "topicGroup": "Môi trường vật dẫn"
   },
   {
     "id": "c5-24",
@@ -383,7 +406,8 @@
     ],
     "answer": 3,
     "explain": "Vì Z_C = |Z_C|∠45° nên H = E/Z_C chậm pha 45° (π/4) so với E. Điều này thể hiện trong biểu thức H⁺ chứa cos(ωt − βz − π/4 + ψ), khác với điện môi lý tưởng, nơi E và H đồng pha.",
-    "source": "Trang 30, 32"
+    "source": "Trang 30, 32",
+    "topicGroup": "Môi trường vật dẫn"
   },
   {
     "id": "c5-25",
@@ -399,7 +423,8 @@
     ],
     "answer": 1,
     "explain": "λ = 2π/β, với β = √(ωμγ/2), nên λ = 2π√(2/(ωμγ)) = √(8π²/(ωμγ)). Đáp án 0 chính là độ sâu xuyên thấu z₀ = 1/α, không phải bước sóng.",
-    "source": "Trang 32"
+    "source": "Trang 32",
+    "topicGroup": "Sóng phẳng & thông số"
   },
   {
     "id": "c5-26",
@@ -415,7 +440,8 @@
     ],
     "answer": 2,
     "explain": "Từ E_t + E_p = E_k và E_t − E_p = (Z_C1/Z_C2)E_k, giải ra E_k = [2Z_C2/(Z_C1 + Z_C2)]E_t. Đáp án 1 là hệ số khúc xạ từ trường K_Hk, không phải K_Ek.",
-    "source": "Trang 38"
+    "source": "Trang 38",
+    "topicGroup": "Phản xạ – khúc xạ"
   },
   {
     "id": "c5-27",
@@ -431,7 +457,8 @@
     ],
     "answer": 3,
     "explain": "Khi Z_C1 = Z_C2 thì K_Ep = K_Hp = 0 và K_Ek = K_Hk = 1: không có sóng phản xạ, toàn bộ sóng tới truyền sang môi trường 2. Hai môi trường khi đó được gọi là phối hợp trở sóng với nhau.",
-    "source": "Trang 40"
+    "source": "Trang 40",
+    "topicGroup": "Phản xạ – khúc xạ"
   },
   {
     "id": "c5-28",
@@ -447,7 +474,8 @@
     ],
     "answer": 0,
     "explain": "Khi |Z_C1| >> |Z_C2|, K_Ep = (Z_C2 − Z_C1)/(Z_C1 + Z_C2) → −1 và K_Ek = 2Z_C2/(Z_C1 + Z_C2) → 0; đồng thời K_Hp → 1, K_Hk → 2. Năng lượng sóng gần như bị phản xạ toàn phần, chỉ một phần rất nhỏ truyền vào môi trường 2.",
-    "source": "Trang 40"
+    "source": "Trang 40",
+    "topicGroup": "Phản xạ – khúc xạ"
   },
   {
     "id": "c5-29",
@@ -463,7 +491,8 @@
     ],
     "answer": 1,
     "explain": "Với ε_r = 4 và μ_r = 1, Z_C2 = Z_C1/√ε_r = 377/2 = 188,5 Ω. Do đó K_Ep = (188,5 − 377)/(188,5 + 377) = −188,5/565,5 = −1/3. Dấu âm cho biết sóng phản xạ ngược pha với sóng tới tại mặt phân cách.",
-    "source": "Trang 38"
+    "source": "Trang 38",
+    "topicGroup": "Phản xạ – khúc xạ"
   },
   {
     "id": "c5-30",
@@ -479,7 +508,178 @@
     ],
     "answer": 2,
     "explain": "Áp dụng điều kiện biên cho H (chú ý H_t và H_p ngược chiều) thu được K_Hp = (Z_C1 − Z_C2)/(Z_C1 + Z_C2) và K_Hk = 2Z_C1/(Z_C1 + Z_C2). K_Hp ngược dấu với K_Ep, còn K_Hk khác K_Ek ở tử số (Z_C1 thay vì Z_C2).",
-    "source": "Trang 39"
+    "source": "Trang 39",
+    "topicGroup": "Phản xạ – khúc xạ"
+  },
+  {
+    "id": "c5-31",
+    "chapter": 5,
+    "topic": "Sóng phẳng",
+    "difficulty": "easy",
+    "question": "Sóng điện từ phẳng là sóng có:",
+    "options": [
+      "Mặt đồng pha là mặt phẳng.",
+      "Mặt đồng pha là mặt cầu.",
+      "Mặt đồng pha là mặt trụ.",
+      "Biên độ không đổi theo mọi phương."
+    ],
+    "answer": 0,
+    "explain": "Theo dạng mặt đồng pha, sóng điện từ được phân thành sóng phẳng (mặt đồng pha là mặt phẳng), sóng trụ và sóng cầu. Phương truyền của sóng phẳng vuông góc với mặt đồng pha.",
+    "source": "Trang 17",
+    "topicGroup": "Sóng phẳng & thông số"
+  },
+  {
+    "id": "c5-32",
+    "chapter": 5,
+    "topic": "Sóng đơn sắc",
+    "difficulty": "easy",
+    "question": "Sóng điện từ đơn sắc (điều hòa) là sóng có:",
+    "options": [
+      "E và H biến thiên hình sin theo thời gian với một tần số xác định.",
+      "Biên độ E và H luôn bằng nhau.",
+      "Chỉ có điện trường, không có từ trường.",
+      "Vận tốc truyền sóng bằng 0."
+    ],
+    "answer": 0,
+    "explain": "Sóng đơn sắc có E và H biến thiên điều hòa theo thời gian với cùng tần số ω. Trong sóng phẳng đơn sắc, E ⊥ H và cả hai vuông góc phương truyền (sóng TEM).",
+    "source": "Trang 17",
+    "topicGroup": "Sóng phẳng & thông số"
+  },
+  {
+    "id": "c5-33",
+    "chapter": 5,
+    "topic": "Chiều vectơ Poynting",
+    "difficulty": "easy",
+    "question": "Trong sóng điện từ phẳng, vectơ Poynting tức thời có chiều như thế nào?",
+    "options": [
+      "Cùng chiều truyền sóng.",
+      "Ngược chiều truyền sóng.",
+      "Vuông góc với phương truyền sóng.",
+      "Luôn bằng 0."
+    ],
+    "answer": 0,
+    "explain": "P = E × H. Với sóng TEM, E, H và phương truyền tạo thành tam diện thuận, nên P hướng cùng chiều truyền năng lượng/sóng.",
+    "source": "Trang 4",
+    "topicGroup": "Bài toán sóng"
+  },
+  {
+    "id": "c5-34",
+    "chapter": 5,
+    "topic": "Vận tốc sóng trong chân không",
+    "difficulty": "easy",
+    "question": "Sóng điện từ truyền trong chân không với vận tốc xấp xỉ:",
+    "options": [
+      "3×10⁸ m/s",
+      "3×10⁶ m/s",
+      "3×10¹⁰ m/s",
+      "1,5×10⁸ m/s"
+    ],
+    "answer": 0,
+    "explain": "Trong chân không, v = c = 1/√(μ₀ε₀) ≈ 3×10⁸ m/s. Trong môi trường vật chất, vận tốc giảm còn c/√(μ_rε_r).",
+    "source": "Trang 24",
+    "topicGroup": "Sóng phẳng & thông số"
+  },
+  {
+    "id": "c5-35",
+    "chapter": 5,
+    "topic": "Tắt dần trong vật dẫn",
+    "difficulty": "medium",
+    "question": "Nhận xét nào đúng về sóng điện từ trong môi trường vật dẫn lý tưởng?",
+    "options": [
+      "Sóng bị tắt dần rất nhanh; tần số càng cao thì độ sâu xuyên thấu càng nhỏ.",
+      "Sóng không bị tắt dần và truyền xa như trong điện môi lý tưởng.",
+      "Tần số càng cao thì sóng xuyên càng sâu.",
+      "Độ sâu xuyên thấu không phụ thuộc tần số."
+    ],
+    "answer": 0,
+    "explain": "Trong vật dẫn, biên độ giảm theo e^(−αz) với α = β = √(ωμγ/2). Độ sâu xuyên thấu z₀ = 1/α = √(2/(ωμγ)) tỉ lệ nghịch √ω, nên tần số càng cao sóng càng nông.",
+    "source": "Trang 32–33",
+    "topicGroup": "Môi trường vật dẫn"
+  },
+  {
+    "id": "c5-36",
+    "chapter": 5,
+    "topic": "Pha của E và H trong điện môi",
+    "difficulty": "medium",
+    "question": "Trong môi trường điện môi lý tưởng, sóng phẳng đơn sắc có đặc điểm nào về pha của E và H?",
+    "options": [
+      "E và H cùng pha.",
+      "H chậm pha π/4 so với E.",
+      "H nhanh pha π/2 so với E.",
+      "E và H ngược pha."
+    ],
+    "answer": 0,
+    "explain": "Trong điện môi lý tưởng, tổng trở sóng Z_C = √(μ/ε) là số thực nên E và H cùng pha. Trong vật dẫn lý tưởng, H chậm pha π/4 so với E.",
+    "source": "Trang 22–24",
+    "topicGroup": "Sóng phẳng & thông số"
+  },
+  {
+    "id": "c5-37",
+    "chapter": 5,
+    "topic": "Ý nghĩa hệ số phản xạ",
+    "difficulty": "medium",
+    "question": "Hệ số phản xạ điện trường K_Ep có giá trị âm cho biết điều gì?",
+    "options": [
+      "Sóng phản xạ ngược pha với sóng tới tại mặt phân cách.",
+      "Sóng phản xạ cùng pha với sóng tới.",
+      "Không có sóng phản xạ.",
+      "Sóng tới bị hấp thụ hoàn toàn."
+    ],
+    "answer": 0,
+    "explain": "Dấu của K_Ep cho biết quan hệ pha giữa sóng phản xạ và sóng tới. K_Ep < 0 nghĩa là điện trường phản xạ đảo chiều (ngược pha) so với điện trường tới tại mặt phân cách.",
+    "source": "Trang 38",
+    "topicGroup": "Phản xạ – khúc xạ"
+  },
+  {
+    "id": "c5-38",
+    "chapter": 5,
+    "topic": "Ý nghĩa độ thẩm điện phức",
+    "difficulty": "medium",
+    "question": "Trong hệ phương trình Maxwell dạng phức, độ thẩm điện phức ε̃ = ε − jγ/ω có ý nghĩa gì?",
+    "options": [
+      "Gộp cả hiệu ứng điện môi và tổn hao do dòng dẫn vào một đại lượng phức.",
+      "Chỉ mô tả tính chất từ của môi trường.",
+      "Luôn là số thực dương, không phụ thuộc tần số.",
+      "Chỉ dùng cho môi trường chân không."
+    ],
+    "answer": 0,
+    "explain": "Phần thực ε mô tả khả năng phân cực điện môi, phần ảo γ/ω mô tả tổn hao dẫn. Dùng ε̃ cho phép viết rot H = jωε̃E gọn như trong điện môi.",
+    "source": "Trang 14–15",
+    "topicGroup": "Sóng phẳng & thông số"
+  },
+  {
+    "id": "c5-39",
+    "chapter": 5,
+    "topic": "Tán sắc trong vật dẫn",
+    "difficulty": "hard",
+    "question": "Vì sao sóng điện từ trong môi trường vật dẫn lý tưởng được coi là có tính tán sắc?",
+    "options": [
+      "Vì vận tốc pha v = √(2ω/(μγ)) phụ thuộc tần số ω.",
+      "Vì vận tốc pha luôn bằng c, không phụ thuộc tần số.",
+      "Vì biên độ sóng không đổi theo phương truyền.",
+      "Vì E và H luôn cùng pha."
+    ],
+    "answer": 0,
+    "explain": "Trong vật dẫn, β = √(ωμγ/2) nên v = ω/β = √(2ω/(μγ)), phụ thuộc ω. Các thành phần tần số khác nhau truyền với vận tốc pha khác nhau, đó là tán sắc.",
+    "source": "Trang 32",
+    "topicGroup": "Môi trường vật dẫn"
+  },
+  {
+    "id": "c5-40",
+    "chapter": 5,
+    "topic": "Điều kiện bờ sóng điện từ",
+    "difficulty": "hard",
+    "question": "Tại mặt phân cách hai môi trường điện môi lý tưởng, không có dòng điện mặt và điện tích mặt, điều kiện bờ nào đúng cho sóng điện từ?",
+    "options": [
+      "Thành phần tiếp tuyến của E và H liên tục qua mặt phân cách.",
+      "Thành phần pháp tuyến của E và H liên tục qua mặt phân cách.",
+      "E và H đều triệt tiêu tại mặt phân cách.",
+      "Chỉ thành phần pháp tuyến của E liên tục, H tự do."
+    ],
+    "answer": 0,
+    "explain": "Từ rot E và rot H suy ra E₁t = E₂t và H₁t = H₂t khi không có dòng mặt. Với σ = 0, các thành phần pháp tuyến của D cũng liên tục; B luôn liên tục theo pháp tuyến.",
+    "source": "Trang 38",
+    "topicGroup": "Phản xạ – khúc xạ"
   }
 ]
 );

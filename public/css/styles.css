@@ -3848,3 +3848,541 @@ body {
     margin: 0.15em 0;
   }
 }
+
+/* =========================================================
+   Practice filters · question bank · smart review
+   ========================================================= */
+
+.select-input {
+  width: 100%;
+  height: 40px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 12.5px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.select-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.bank-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.bank-toolbar .bank-search {
+  flex: 1 1 280px;
+  max-width: 430px;
+}
+
+.bank-toolbar .select-input {
+  flex: 0 1 175px;
+  width: auto;
+  min-width: 145px;
+}
+
+.bank-toolbar .button {
+  flex: 0 0 auto;
+}
+
+.bank-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bank-card {
+  padding: 19px 20px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.bank-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 9px;
+}
+
+.bank-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.bank-id {
+  flex: 0 0 auto;
+  color: color-mix(in srgb, var(--muted) 80%, transparent);
+  font-family: var(--font-math);
+  font-size: 10.5px;
+  letter-spacing: 0.03em;
+}
+
+.bank-question {
+  margin: 0 0 12px;
+  color: var(--ink);
+  font-size: 15.5px;
+  font-weight: 650;
+  line-height: 1.62;
+}
+
+.bank-options {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+
+.bank-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--surface-2);
+  color: var(--ink-2);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.bank-option.is-correct {
+  border-color: color-mix(in srgb, var(--success) 42%, var(--line));
+  background: var(--success-soft);
+  color: var(--ink);
+}
+
+.bank-option-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.bank-answer-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex: 0 0 auto;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--success);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.bank-answer-tag .icon {
+  width: 11px;
+  height: 11px;
+}
+
+.bank-explain {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 10px 10px 0;
+  background: var(--accent-soft);
+}
+
+.bank-explain-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.bank-explain-head strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--accent-strong);
+  font-size: 11.5px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.bank-explain-head strong .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.bank-answer-pill {
+  flex: 0 0 auto;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--success);
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.bank-explain p {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 13px;
+  line-height: 1.68;
+}
+
+.bank-source {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.bank-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.bank-load-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.bank-load-more .button span {
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 600;
+}
+
+.bank-end {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 18px 0 0;
+  color: var(--muted);
+  font-size: 11.5px;
+}
+
+.bank-end .icon {
+  width: 14px;
+  height: 14px;
+  color: var(--success);
+}
+
+.smart-review-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.9fr);
+  gap: 24px;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 26px 28px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background:
+    radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 24rem),
+    linear-gradient(135deg, var(--surface), var(--surface-2));
+  box-shadow: var(--shadow-sm);
+}
+
+.smart-review-copy h2 {
+  margin: 9px 0 5px;
+  font-size: clamp(1.35rem, 2vw, 1.8rem);
+  letter-spacing: -0.035em;
+}
+
+.smart-review-copy p {
+  max-width: 590px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.smart-review-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 17px;
+}
+
+.smart-review-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.smart-review-stat {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 9px;
+  padding: 12px 13px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+}
+
+.smart-review-stat-icon {
+  grid-row: 1 / 3;
+  display: grid;
+  place-items: center;
+  width: 31px;
+  height: 31px;
+  border-radius: 9px;
+  background: var(--surface-3);
+  color: var(--accent);
+}
+
+.smart-review-stat-icon .icon {
+  width: 16px;
+  height: 16px;
+}
+
+.smart-review-stat strong {
+  font-size: 18px;
+  line-height: 1.1;
+}
+
+.smart-review-stat > span:last-child {
+  color: var(--muted);
+  font-size: 9.5px;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+}
+
+.smart-review-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 16px;
+  align-items: start;
+}
+
+.smart-review-side {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.smart-preview-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.smart-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px dashed var(--line);
+}
+
+.smart-item:first-child {
+  padding-top: 2px;
+}
+
+.smart-item:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.smart-rank {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 29px;
+  height: 29px;
+  border-radius: 8px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-size: 10.5px;
+  font-weight: 800;
+}
+
+.smart-item-main {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.smart-item-title {
+  margin: 3px 0 6px;
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.58;
+}
+
+.smart-reasons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.smart-reason {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 9.5px;
+  font-weight: 650;
+}
+
+.smart-item > .button {
+  flex: 0 0 auto;
+}
+
+.smart-how {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.smart-how li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.smart-how li > span {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 23px;
+  height: 23px;
+  border-radius: 7px;
+  background: var(--surface-3);
+  color: var(--ink-2);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.smart-how strong {
+  display: block;
+  margin-bottom: 1px;
+  font-size: 12px;
+}
+
+.smart-how p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 10.5px;
+  line-height: 1.55;
+}
+
+.smart-links {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+@media (max-width: 1020px) {
+  .smart-review-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .smart-review-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .smart-review-side {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .bank-toolbar {
+    align-items: stretch;
+  }
+
+  .bank-toolbar .bank-search,
+  .bank-toolbar .select-input {
+    flex: 1 1 100%;
+    max-width: none;
+    width: 100%;
+  }
+
+  .bank-card {
+    padding: 16px 14px;
+  }
+
+  .bank-card-head {
+    flex-direction: column-reverse;
+    gap: 5px;
+  }
+
+  .bank-option {
+    font-size: 12.5px;
+  }
+
+  .bank-actions .button {
+    flex: 1 1 auto;
+  }
+
+  .smart-review-hero {
+    padding: 20px 17px;
+  }
+
+  .smart-review-controls {
+    align-items: stretch;
+  }
+
+  .smart-review-controls .segmented {
+    flex: 1 1 100%;
+  }
+
+  .smart-review-controls .button {
+    width: 100%;
+  }
+
+  .smart-review-side {
+    grid-template-columns: 1fr;
+  }
+
+  .smart-item {
+    flex-wrap: wrap;
+  }
+
+  .smart-item-main {
+    flex-basis: calc(100% - 42px);
+  }
+
+  .smart-item > .button {
+    margin-left: 41px;
+  }
+}
+
+@media (max-width: 440px) {
+  .smart-review-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .smart-review-stat strong {
+    font-size: 16px;
+  }
+
+  .bank-explain-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+}

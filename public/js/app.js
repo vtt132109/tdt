@@ -25,6 +25,8 @@
     result: "Kết quả",
     wrong: "Câu đã làm sai",
     bookmarks: "Câu đánh dấu",
+    bank: "Ngân hàng câu hỏi",
+    smart: "Ôn tập thông minh",
     notebook: "Sổ công thức",
     history: "Lịch sử học",
     settings: "Cài đặt"
@@ -41,7 +43,7 @@
 
   const state = {
     view: "dashboard",
-    practiceSetup: { chapter: 1, count: 10 },
+    practiceSetup: { chapter: 1, difficulty: "all", topicGroup: "all", count: 10 },
     examSetup: { chapters: CHAPTERS.map((c) => c.number), count: 20, duration: 30 },
     practice: null,
     exam: null,
@@ -52,6 +54,9 @@
     historyFilter: "all",
     notebookFilter: "all",
     notebookQuery: "",
+    bankFilter: { query: "", chapter: "all", difficulty: "all", topicGroup: "all", status: "all" },
+    bankLimit: 20,
+    smartCount: 20,
     formulaCopyMap: {},
     pendingConfirm: null,
     lastFocused: null
@@ -358,6 +363,8 @@
     if (mode === "exam") return "Thi thử";
     if (mode === "wrong") return "Ôn câu sai";
     if (mode === "bookmarks") return "Ôn câu đánh dấu";
+    if (mode === "smart") return "Ôn thông minh";
+    if (mode === "bank") return "Luyện từ ngân hàng";
     return "Luyện tập";
   }
 
@@ -548,6 +555,149 @@
   }
 
   /* ---------------------------------------------------------
+     Filters, question bank & smart review
+     --------------------------------------------------------- */
+
+  function topicGroupsFor(chapter) {
+    const source = chapter === "all" ? QUESTIONS : questionsForChapter(chapter);
+    return unique(source.map((question) => question.topicGroup).filter(Boolean));
+  }
+
+  function normalizePracticeSetup() {
+    const setup = state.practiceSetup;
+    if (setup.chapter !== "all" && !CHAPTER_MAP.has(Number(setup.chapter))) setup.chapter = 1;
+    if (!["all", "easy", "medium", "hard"].includes(setup.difficulty)) setup.difficulty = "all";
+    const groups = topicGroupsFor(setup.chapter);
+    if (setup.topicGroup !== "all" && !groups.includes(setup.topicGroup)) setup.topicGroup = "all";
+    return setup;
+  }
+
+  function practicePool() {
+    const setup = normalizePracticeSetup();
+    return QUESTIONS.filter((question) => {
+      if (setup.chapter !== "all" && Number(question.chapter) !== Number(setup.chapter)) return false;
+      if (setup.difficulty !== "all" && question.difficulty !== setup.difficulty) return false;
+      if (setup.topicGroup !== "all" && question.topicGroup !== setup.topicGroup) return false;
+      return true;
+    });
+  }
+
+  function questionStatus(questionId) {
+    if (store.wrong[questionId]) return "wrong";
+    if (store.bookmarks.includes(questionId)) return "bookmarked";
+    const record = store.records[questionId];
+    if (record && record.attempts > 0) return "done";
+    return "new";
+  }
+
+  function statusMeta(questionId) {
+    const status = questionStatus(questionId);
+    if (status === "wrong") return { key: status, label: "Đang cần ôn", className: "badge-danger" };
+    if (status === "bookmarked") return { key: status, label: "Đã đánh dấu", className: "badge-warning" };
+    if (status === "done") {
+      const record = store.records[questionId];
+      const accuracy = record && record.attempts ? Math.round((record.correct / record.attempts) * 100) : 0;
+      return { key: status, label: "Đã làm · " + accuracy + "%", className: "badge-success" };
+    }
+    return { key: status, label: "Chưa làm", className: "" };
+  }
+
+  function bankQuestions() {
+    const filter = state.bankFilter;
+    const query = fold(filter.query);
+    return QUESTIONS.filter((question) => {
+      if (filter.chapter !== "all" && Number(question.chapter) !== Number(filter.chapter)) return false;
+      if (filter.difficulty !== "all" && question.difficulty !== filter.difficulty) return false;
+      if (filter.topicGroup !== "all" && question.topicGroup !== filter.topicGroup) return false;
+      if (filter.status !== "all") {
+        const record = store.records[question.id];
+        const attempted = Boolean(record && record.attempts > 0);
+        const wrong = Boolean(store.wrong[question.id]);
+        const bookmarked = store.bookmarks.includes(question.id);
+        if (filter.status === "new" && (wrong || bookmarked || attempted)) return false;
+        if (filter.status === "wrong" && !wrong) return false;
+        if (filter.status === "bookmarked" && !bookmarked) return false;
+        if (filter.status === "done" && !attempted) return false;
+      }
+      if (!query) return true;
+      return fold([
+        question.id,
+        question.question,
+        question.topic,
+        question.topicGroup,
+        question.explain,
+        question.options.join(" ")
+      ].join(" ")).includes(query);
+    });
+  }
+
+  function daysSince(timestamp) {
+    if (!timestamp) return Infinity;
+    return Math.max(0, Math.floor((Date.now() - timestamp) / 86400000));
+  }
+
+  function smartCandidate(question) {
+    const record = store.records[question.id];
+    const wrong = store.wrong[question.id];
+    const reasons = [];
+    let score = 0;
+    if (wrong) {
+      score += 55 + Math.min(35, Number(wrong.count || 1) * 10);
+      reasons.push("Sai " + Number(wrong.count || 1) + " lần");
+    }
+    if (record && record.attempts > 0) {
+      const accuracy = Math.round((record.correct / record.attempts) * 100);
+      if (accuracy < 70) {
+        score += Math.round((70 - accuracy) * 0.55);
+        reasons.push("Độ chính xác " + accuracy + "%");
+      }
+      const days = daysSince(record.lastAt);
+      if (days >= 3) {
+        score += Math.min(18, days);
+        reasons.push("Lâu chưa ôn · " + days + " ngày");
+      }
+    } else {
+      score += 28;
+      reasons.push("Chưa làm lần nào");
+    }
+    if (question.difficulty === "hard") {
+      score += 10;
+      reasons.push("Câu khó");
+    } else if (question.difficulty === "medium") {
+      score += 4;
+    }
+    if (store.bookmarks.includes(question.id)) {
+      score += 14;
+      reasons.push("Đã đánh dấu");
+    }
+    if (!reasons.length) reasons.push("Củng cố kiến thức nền");
+    return { question, score, reasons };
+  }
+
+  function smartCandidates() {
+    return QUESTIONS.map(smartCandidate).sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      if (Number(a.question.chapter) !== Number(b.question.chapter)) {
+        return Number(a.question.chapter) - Number(b.question.chapter);
+      }
+      return String(a.question.id).localeCompare(String(b.question.id));
+    });
+  }
+
+  function smartStats() {
+    const candidates = smartCandidates();
+    const stats = { wrong: 0, fresh: 0, stale: 0, hard: 0, total: candidates.length };
+    candidates.forEach((candidate) => {
+      const record = store.records[candidate.question.id];
+      if (store.wrong[candidate.question.id]) stats.wrong += 1;
+      if (!record || !record.attempts) stats.fresh += 1;
+      if (record && record.attempts && daysSince(record.lastAt) >= 7) stats.stale += 1;
+      if (candidate.question.difficulty === "hard") stats.hard += 1;
+    });
+    return stats;
+  }
+
+  /* ---------------------------------------------------------
      Navigation & rendering
      --------------------------------------------------------- */
 
@@ -589,13 +739,19 @@
   }
 
   function activeNavRoute() {
-    if (state.view === "practiceQuiz" || state.view === "practice") return "practice";
+    if (state.view === "practiceQuiz") {
+      if (state.practice && state.practice.returnTo) return state.practice.returnTo;
+      return "practice";
+    }
+    if (state.view === "practice") return "practice";
     if (state.view === "examQuiz" || state.view === "exam") return "exam";
     if (state.view === "result") {
       if (state.resultOrigin === "exam") return "exam";
       if (state.resultOrigin === "history") return "history";
       if (state.resultOrigin === "wrong") return "wrong";
       if (state.resultOrigin === "bookmarks") return "bookmarks";
+      if (state.resultOrigin === "smart") return "smart";
+      if (state.resultOrigin === "bank") return "bank";
       return "practice";
     }
     return state.view;
@@ -631,6 +787,12 @@
         break;
       case "bookmarks":
         renderBookmarks();
+        break;
+      case "bank":
+        renderBank();
+        break;
+      case "smart":
+        renderSmart();
         break;
       case "notebook":
         renderNotebook();
@@ -835,7 +997,6 @@
         '<div class="mini-leaderboard"><h3>Tiến độ từng chương</h3><p>Tỷ lệ câu đã làm trên ngân hàng của chương.</p><div class="progress-chapter-list">' + progressRows + '</div></div>' +
       '</section>';
   }
-
   /* ---------------------------------------------------------
      Practice setup
      --------------------------------------------------------- */
@@ -852,14 +1013,12 @@
   }
 
   function renderPracticeSetup() {
-    if (!["all"].includes(state.practiceSetup.chapter)) {
-      const number = Number(state.practiceSetup.chapter);
-      state.practiceSetup.chapter = CHAPTER_MAP.has(number) ? number : 1;
-    }
-    const selected = state.practiceSetup.chapter;
-    const pool = selected === "all" ? QUESTIONS : questionsForChapter(selected);
-    const actualCount = Math.min(Number(state.practiceSetup.count) || 10, pool.length);
+    const setup = normalizePracticeSetup();
+    const selected = setup.chapter;
+    const pool = practicePool();
+    const actualCount = Math.min(Number(setup.count) || 10, pool.length);
     const chapter = selected === "all" ? null : CHAPTER_MAP.get(selected);
+    const groups = topicGroupsFor(selected);
     const allCard = '<button class="select-card' + (selected === "all" ? " is-selected" : "") + '" type="button" data-action="pick-practice-chapter" data-chapter="all" style="--chapter-color:var(--accent)" aria-pressed="' + (selected === "all") + '">' +
       '<span class="select-num">∑</span>' +
       '<span class="select-body"><strong>Tất cả chương</strong><small>Trộn câu hỏi từ Chương 1–6 · ' + QUESTIONS.length + ' câu</small></span>' +
@@ -872,23 +1031,33 @@
       '<span class="check-indicator">' + icon("check") + '</span>' +
     '</button>').join("");
 
-    const countButtons = [10, 20, 30].map((count) => '<button class="seg-btn' + (Number(state.practiceSetup.count) === count ? " is-selected" : "") + '" type="button" data-action="pick-practice-count" data-count="' + count + '" aria-pressed="' + (Number(state.practiceSetup.count) === count) + '">' + count + ' câu</button>').join("");
+    const difficultyButtons = [["all", "Tất cả"], ["easy", "Cơ bản"], ["medium", "Trung bình"], ["hard", "Khó"]].map(([value, label]) =>
+      '<button class="seg-btn' + (setup.difficulty === value ? " is-selected" : "") + '" type="button" data-action="pick-practice-difficulty" data-difficulty="' + value + '" aria-pressed="' + (setup.difficulty === value) + '">' + label + '</button>'
+    ).join("");
+
+    const topicOptions = '<option value="all">Tất cả chủ đề</option>' + groups.map((group) =>
+      '<option value="' + esc(group) + '"' + (setup.topicGroup === group ? " selected" : "") + '>' + esc(group) + '</option>'
+    ).join("");
+
+    const countButtons = [10, 20, 30, 40].map((count) => '<button class="seg-btn' + (Number(setup.count) === count ? " is-selected" : "") + '" type="button" data-action="pick-practice-count" data-count="' + count + '" aria-pressed="' + (Number(setup.count) === count) + '">' + count + ' câu</button>').join("");
 
     viewEl.innerHTML =
       '<div class="page-head">' +
-        '<div><span class="eyebrow">' + icon("target") + 'Luyện tập chủ động</span><h1 class="page-title">Luyện theo chương</h1><p class="page-lead">Chọn một chương hoặc trộn cả 6 chương. Trả lời từng câu, xem giải thích ngay và để hệ thống ghi nhận những câu cần ôn lại.</p></div>' +
-        '<div class="page-head-actions"><button class="button button-secondary" type="button" data-route="notebook">' + icon("book") + 'Sổ công thức</button><button class="button button-primary" type="button" data-route="exam">' + icon("clock") + 'Thi thử</button></div>' +
+        '<div><span class="eyebrow">' + icon("target") + 'Luyện tập chủ động</span><h1 class="page-title">Luyện theo chương</h1><p class="page-lead">Chọn chương, độ khó và chủ đề bạn muốn ôn. Trả lời từng câu, xem giải thích ngay và để hệ thống ghi nhận những câu cần ôn lại.</p></div>' +
+        '<div class="page-head-actions"><button class="button button-secondary" type="button" data-route="bank">' + icon("layers") + 'Ngân hàng câu hỏi</button><button class="button button-primary" type="button" data-route="exam">' + icon("clock") + 'Thi thử</button></div>' +
       '</div>' +
       '<div class="setup-layout">' +
         '<div class="setup-main">' +
           '<section class="panel">' +
-            '<div class="panel-head"><div><h2>1. Chọn phạm vi</h2><p>Mỗi chương gồm 30 câu hỏi bám sát slide bài giảng.</p></div></div>' +
+            '<div class="panel-head"><div><h2>1. Chọn phạm vi</h2><p>Ngân hàng gồm ' + QUESTIONS.length + ' câu hỏi bám sát slide bài giảng.</p></div></div>' +
             '<div class="panel-body"><div class="chapter-select-grid">' + allCard + chapterCards + '</div></div>' +
           '</section>' +
           '<section class="panel">' +
-            '<div class="panel-head"><div><h2>2. Cấu hình phiên luyện</h2><p>Ngắn hay dài tùy thời gian bạn có.</p></div></div>' +
+            '<div class="panel-head"><div><h2>2. Cấu hình phiên luyện</h2><p>Lọc theo độ khó, chủ đề và số câu bạn muốn làm.</p></div></div>' +
             '<div class="panel-body">' +
-              '<div class="field"><div class="field-label"><span>Số câu hỏi</span><span class="field-hint">Có ' + pool.length + ' câu trong phạm vi đã chọn</span></div><div class="segmented">' + countButtons + '</div></div>' +
+              '<div class="field"><div class="field-label"><span>Độ khó</span><span class="field-hint">Có ' + pool.length + ' câu phù hợp</span></div><div class="segmented">' + difficultyButtons + '</div></div>' +
+              '<div class="field" style="margin-top:18px"><div class="field-label"><span>Chủ đề</span><span class="field-hint">' + groups.length + ' nhóm chủ đề trong phạm vi</span></div><select class="select-input" id="practice-topic" aria-label="Lọc theo chủ đề">' + topicOptions + '</select></div>' +
+              '<div class="field" style="margin-top:18px"><div class="field-label"><span>Số câu hỏi</span><span class="field-hint">Tối đa ' + pool.length + ' câu</span></div><div class="segmented">' + countButtons + '</div></div>' +
               '<div class="field" style="margin-top:22px"><div class="toggle-row"><div class="toggle-copy"><strong>Trộn thứ tự câu hỏi</strong><span>Mỗi lần luyện sẽ có thứ tự khác nhau.</span></div><button class="switch" type="button" data-action="toggle-setting" data-key="shuffleQuestions" aria-pressed="' + Boolean(store.settings.shuffleQuestions) + '" aria-label="Trộn thứ tự câu hỏi"></button></div>' +
               '<div class="toggle-row"><div class="toggle-copy"><strong>Hiện giải thích ngay</strong><span>Mở phần giải thích ngay sau khi chọn đáp án.</span></div><button class="switch" type="button" data-action="toggle-setting" data-key="showExplanation" aria-pressed="' + Boolean(store.settings.showExplanation) + '" aria-label="Hiện giải thích ngay"></button></div></div>' +
             '</div>' +
@@ -898,6 +1067,8 @@
         '<aside class="setup-summary" aria-label="Tóm tắt phiên luyện">' +
           '<h2>Phiên luyện của bạn</h2><p>Kiểm tra nhanh trước khi bắt đầu.</p>' +
           '<div class="summary-line"><span>Phạm vi</span><span>' + (chapter ? esc(chapter.title) : "Tất cả chương") + '</span></div>' +
+          '<div class="summary-line"><span>Độ khó</span><span>' + (setup.difficulty === "all" ? "Tất cả" : difficultyLabel(setup.difficulty)) + '</span></div>' +
+          '<div class="summary-line"><span>Chủ đề</span><span>' + (setup.topicGroup === "all" ? "Tất cả" : esc(setup.topicGroup)) + '</span></div>' +
           '<div class="summary-line"><span>Ngân hàng</span><span>' + pool.length + ' câu</span></div>' +
           '<div class="summary-line"><span>Hình thức</span><span>Có giải thích</span></div>' +
           '<div class="summary-line"><span>Trộn câu</span><span>' + (store.settings.shuffleQuestions ? "Có" : "Không") + '</span></div>' +
@@ -918,7 +1089,7 @@
       showToast("Không có câu hỏi nào để bắt đầu.", "error");
       return;
     }
-    const ordered = store.settings.shuffleQuestions ? shuffle(pool) : pool;
+    const ordered = mode === "smart" ? pool : store.settings.shuffleQuestions ? shuffle(pool) : pool;
     state.practice = {
       questions: ordered,
       index: 0,
@@ -1046,7 +1217,15 @@
     store.attempts = store.attempts.slice(0, 50);
     saveStore();
     state.result = attempt;
-    state.resultOrigin = practice.mode === "wrong" ? "wrong" : practice.mode === "bookmarks" ? "bookmarks" : "practice";
+    state.resultOrigin = practice.mode === "wrong"
+      ? "wrong"
+      : practice.mode === "bookmarks"
+        ? "bookmarks"
+        : practice.mode === "smart"
+          ? "smart"
+          : practice.mode === "bank"
+            ? "bank"
+            : "practice";
     state.practice = null;
     state.view = "result";
     window.scrollTo({ top: 0, behavior: "auto" });
@@ -1204,7 +1383,6 @@
         '</aside>' +
       '</div>';
   }
-
   /* ---------------------------------------------------------
      Results
      --------------------------------------------------------- */
@@ -1370,6 +1548,173 @@
       '<div class="page-head"><div><span class="eyebrow">' + icon("bookmark") + 'Danh sách cá nhân</span><h1 class="page-title">Câu đánh dấu</h1><p class="page-lead">Những câu bạn muốn xem lại. Có thể luyện riêng từng câu hoặc luyện toàn bộ danh sách.</p></div><div class="page-head-actions">' + actions + '</div></div>' +
       '<div class="list-toolbar">' + filterTabs(state.bookmarkFilter, "filter-bookmarks") + '<span class="spacer"></span><span class="list-count">' + entries.length + ' câu đang hiển thị</span></div>' +
       content;
+  }
+
+  /* ---------------------------------------------------------
+     Question bank
+     --------------------------------------------------------- */
+
+  function bankOptionHtml(question, index) {
+    const correct = index === Number(question.answer);
+    return '<div class="bank-option' + (correct ? " is-correct" : "") + '">' +
+      '<span class="mini-letter">' + OPTION_LETTERS[index] + '</span>' +
+      '<span class="bank-option-text">' + richMath(question.options[index], true) + '</span>' +
+      (correct ? '<span class="bank-answer-tag">' + icon("check") + 'Đáp án</span>' : "") +
+    '</div>';
+  }
+
+  function bankCardHtml(question) {
+    const meta = statusMeta(question.id);
+    const bookmarked = store.bookmarks.includes(question.id);
+    return '<article class="bank-card">' +
+      '<div class="bank-card-head">' +
+        '<div class="bank-card-meta">' +
+          '<span class="badge badge-accent">Chương ' + esc(question.chapter) + '</span>' +
+          '<span class="badge">' + esc(question.topicGroup || question.topic || "Trường điện từ") + '</span>' +
+          '<span class="difficulty difficulty-' + esc(question.difficulty || "medium") + '">' + difficultyLabel(question.difficulty) + '</span>' +
+          '<span class="badge ' + meta.className + '">' + esc(meta.label) + '</span>' +
+        '</div>' +
+        '<span class="bank-id">' + esc(question.id) + '</span>' +
+      '</div>' +
+      '<h3 class="bank-question">' + richMath(question.question) + '</h3>' +
+      '<div class="bank-options">' + question.options.map((option, index) => bankOptionHtml(question, index)).join("") + '</div>' +
+      '<div class="bank-explain"><div class="bank-explain-head"><strong>' + icon("spark") + 'Giải thích</strong><span class="bank-answer-pill">Đáp án ' + OPTION_LETTERS[Number(question.answer)] + '</span></div>' +
+        '<p>' + richMath(question.explain) + '</p>' +
+        '<span class="bank-source">Nguồn: ' + esc(question.source || ("Chương " + question.chapter)) + '</span>' +
+      '</div>' +
+      '<div class="bank-actions">' +
+        '<button class="button button-primary button-sm" type="button" data-action="practice-single" data-id="' + esc(question.id) + '" data-mode="bank">' + icon("play") + 'Luyện câu này</button>' +
+        '<button class="button button-ghost button-sm" type="button" data-action="toggle-bookmark" data-id="' + esc(question.id) + '">' + icon("bookmark") + (bookmarked ? "Bỏ đánh dấu" : "Đánh dấu") + '</button>' +
+      '</div>' +
+    '</article>';
+  }
+
+  function renderBankResults() {
+    const results = $("#bank-results");
+    if (!results) return;
+    const all = bankQuestions();
+    const visible = all.slice(0, Math.max(1, state.bankLimit));
+    const count = $("#bank-count");
+    if (count) {
+      count.textContent = all.length === QUESTIONS.length
+        ? QUESTIONS.length + " câu trong ngân hàng"
+        : all.length + " / " + QUESTIONS.length + " câu phù hợp";
+    }
+    if (!all.length) {
+      results.innerHTML = emptyState("search", "Không tìm thấy câu phù hợp", "Thử từ khóa khác hoặc bỏ bớt bộ lọc. Bạn có thể tìm theo nội dung câu hỏi, đáp án, chủ đề hoặc phần giải thích.", '<button class="button button-secondary" type="button" data-action="reset-bank-filters">Xóa bộ lọc</button>');
+      return;
+    }
+    const remaining = all.length - visible.length;
+    results.innerHTML = '<div class="bank-list">' + visible.map(bankCardHtml).join("") + '</div>' +
+      (remaining > 0
+        ? '<div class="bank-load-more"><button class="button button-secondary" type="button" data-action="bank-load-more">' + icon("chevron") + 'Xem thêm ' + Math.min(20, remaining) + ' câu <span>còn ' + remaining + ' câu</span></button></div>'
+        : '<p class="bank-end">' + icon("check") + 'Bạn đã xem hết ' + all.length + ' câu phù hợp.</p>');
+  }
+
+  function renderBank() {
+    const filter = state.bankFilter;
+    if (filter.chapter !== "all" && !CHAPTER_MAP.has(Number(filter.chapter))) filter.chapter = "all";
+    const topics = topicGroupsFor(filter.chapter);
+    if (filter.topicGroup !== "all" && !topics.includes(filter.topicGroup)) filter.topicGroup = "all";
+    if (!["all", "easy", "medium", "hard"].includes(filter.difficulty)) filter.difficulty = "all";
+    if (!["all", "new", "wrong", "bookmarked", "done"].includes(filter.status)) filter.status = "all";
+
+    const chapterOptions = '<option value="all">Tất cả chương</option>' + CHAPTERS.map((chapter) =>
+      '<option value="' + chapter.number + '"' + (Number(filter.chapter) === chapter.number ? " selected" : "") + '>Chương ' + chapter.number + ' · ' + esc(chapter.title) + '</option>'
+    ).join("");
+    const difficultyOptions = [["all", "Tất cả độ khó"], ["easy", "Cơ bản"], ["medium", "Trung bình"], ["hard", "Khó"]].map(([value, label]) =>
+      '<option value="' + value + '"' + (filter.difficulty === value ? " selected" : "") + '>' + label + '</option>'
+    ).join("");
+    const topicOptions = '<option value="all">Tất cả chủ đề</option>' + topics.map((topic) =>
+      '<option value="' + esc(topic) + '"' + (filter.topicGroup === topic ? " selected" : "") + '>' + esc(topic) + '</option>'
+    ).join("");
+    const statusOptions = [["all", "Mọi trạng thái"], ["new", "Chưa làm"], ["wrong", "Đang cần ôn"], ["bookmarked", "Đã đánh dấu"], ["done", "Đã làm"]].map(([value, label]) =>
+      '<option value="' + value + '"' + (filter.status === value ? " selected" : "") + '>' + label + '</option>'
+    ).join("");
+
+    viewEl.innerHTML =
+      '<div class="page-head"><div><span class="eyebrow">' + icon("layers") + 'Tra cứu toàn bộ ngân hàng</span><h1 class="page-title">Ngân hàng câu hỏi</h1><p class="page-lead">Tìm kiếm và lọc ' + QUESTIONS.length + ' câu hỏi theo chương, độ khó, chủ đề hoặc trạng thái học tập. Mỗi thẻ hiển thị đáp án đúng và giải thích ngay tại chỗ.</p></div><div class="page-head-actions"><button class="button button-secondary" type="button" data-route="smart">' + icon("spark") + 'Ôn thông minh</button><button class="button button-primary" type="button" data-route="practice">' + icon("target") + 'Luyện tập</button></div></div>' +
+      '<div class="bank-toolbar">' +
+        '<div class="search-wrap bank-search">' + icon("search") + '<input class="search-input" id="bank-search" type="search" placeholder="Tìm theo nội dung, đáp án, chủ đề..." value="' + esc(filter.query) + '" autocomplete="off"></div>' +
+        '<select class="select-input" id="bank-chapter" aria-label="Lọc theo chương">' + chapterOptions + '</select>' +
+        '<select class="select-input" id="bank-difficulty" aria-label="Lọc theo độ khó">' + difficultyOptions + '</select>' +
+        '<select class="select-input" id="bank-topic" aria-label="Lọc theo chủ đề">' + topicOptions + '</select>' +
+        '<select class="select-input" id="bank-status" aria-label="Lọc theo trạng thái">' + statusOptions + '</select>' +
+        '<button class="button button-ghost button-sm" type="button" data-action="reset-bank-filters">' + icon("refresh") + 'Đặt lại</button>' +
+      '</div>' +
+      '<div class="list-toolbar"><span class="list-count" id="bank-count"></span><span class="spacer"></span><span class="list-count">Hiển thị tối đa ' + state.bankLimit + ' câu mỗi lần</span></div>' +
+      '<div id="bank-results"></div>';
+    renderBankResults();
+    const search = $("#bank-search");
+    if (search && filter.query) {
+      search.focus({ preventScroll: true });
+      search.setSelectionRange(search.value.length, search.value.length);
+    }
+  }
+
+  /* ---------------------------------------------------------
+     Smart review
+     --------------------------------------------------------- */
+
+  function renderSmart() {
+    const stats = smartStats();
+    const candidates = smartCandidates();
+    const preview = candidates.slice(0, 8);
+    const selectedCount = Math.min(Number(state.smartCount) || 20, candidates.length);
+    const countButtons = [10, 20, 30].map((count) =>
+      '<button class="seg-btn' + (Number(state.smartCount) === count ? " is-selected" : "") + '" type="button" data-action="pick-smart-count" data-count="' + count + '" aria-pressed="' + (Number(state.smartCount) === count) + '">' + count + ' câu</button>'
+    ).join("");
+    const statCards = [
+      { label: "Câu đang cần ôn", value: stats.wrong, iconName: "refresh" },
+      { label: "Câu chưa làm", value: stats.fresh, iconName: "spark" },
+      { label: "Lâu chưa ôn", value: stats.stale, iconName: "history" },
+      { label: "Câu khó", value: stats.hard, iconName: "layers" }
+    ].map((item) => '<div class="smart-review-stat"><span class="smart-review-stat-icon">' + icon(item.iconName) + '</span><strong>' + item.value + '</strong><span>' + esc(item.label) + '</span></div>').join("");
+
+    const previewHtml = preview.map((candidate, index) => {
+      const question = candidate.question;
+      const reasons = candidate.reasons.slice(0, 3).map((reason) => '<span class="smart-reason">' + esc(reason) + '</span>').join("");
+      return '<article class="smart-item">' +
+        '<span class="smart-rank">' + String(index + 1).padStart(2, "0") + '</span>' +
+        '<div class="smart-item-main">' +
+          '<div class="list-card-meta"><span class="badge badge-accent">Chương ' + esc(question.chapter) + '</span><span>' + esc(question.topicGroup || question.topic || "") + '</span><span class="difficulty difficulty-' + esc(question.difficulty || "medium") + '">' + difficultyLabel(question.difficulty) + '</span></div>' +
+          '<h3 class="smart-item-title">' + richMath(question.question) + '</h3>' +
+          '<div class="smart-reasons">' + reasons + '</div>' +
+        '</div>' +
+        '<button class="button button-secondary button-sm" type="button" data-action="practice-single" data-id="' + esc(question.id) + '" data-mode="smart">' + icon("play") + 'Luyện</button>' +
+      '</article>';
+    }).join("");
+
+    viewEl.innerHTML =
+      '<div class="page-head"><div><span class="eyebrow">' + icon("spark") + 'Ưu tiên đúng chỗ còn yếu</span><h1 class="page-title">Ôn tập thông minh</h1><p class="page-lead">Hệ thống chấm điểm từng câu dựa trên số lần sai, độ chính xác, thời gian chưa ôn, câu chưa làm, độ khó và đánh dấu. Phiên ôn giữ nguyên thứ tự ưu tiên.</p></div><div class="page-head-actions"><button class="button button-secondary" type="button" data-route="bank">' + icon("layers") + 'Ngân hàng câu hỏi</button><button class="button button-ghost" type="button" data-route="wrong">' + icon("refresh") + 'Câu đã sai</button></div></div>' +
+      '<section class="smart-review-hero">' +
+        '<div class="smart-review-copy"><span class="badge badge-accent">' + candidates.length + ' câu đã được xếp hạng</span>' +
+          '<h2>Bắt đầu từ câu đáng ôn nhất</h2>' +
+          '<p>Những câu từng sai nhiều lần, có độ chính xác thấp hoặc lâu chưa chạm tới sẽ đứng đầu danh sách. Bạn vẫn có thể chọn số câu cho vừa thời gian.</p>' +
+          '<div class="smart-review-controls"><div class="segmented">' + countButtons + '</div>' +
+            '<button class="button button-primary button-lg" type="button" data-action="start-smart">' + icon("play") + 'Ôn ' + selectedCount + ' câu ưu tiên</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="smart-review-stats">' + statCards + '</div>' +
+      '</section>' +
+      '<div class="smart-review-layout">' +
+        '<section class="panel"><div class="panel-head"><div><h2>Danh sách ưu tiên</h2><p>8 câu đứng đầu theo điểm ưu tiên hiện tại.</p></div><span class="badge">Cập nhật theo tiến độ</span></div>' +
+          '<div class="smart-preview-list">' + previewHtml + '</div>' +
+        '</section>' +
+        '<aside class="smart-review-side">' +
+          '<section class="panel"><div class="panel-head"><div><h2>Cách chấm điểm</h2><p>Minh bạch, dựa trên dữ liệu học của bạn.</p></div></div><div class="panel-body"><ul class="smart-how">' +
+            '<li><span>1</span><div><strong>Câu từng sai</strong><p>Số lần sai càng nhiều, điểm ưu tiên càng cao.</p></div></li>' +
+            '<li><span>2</span><div><strong>Độ chính xác thấp</strong><p>Câu có tỉ lệ đúng dưới 70% được cộng điểm.</p></div></li>' +
+            '<li><span>3</span><div><strong>Lâu chưa ôn</strong><p>Từ 3 ngày không chạm tới, câu hỏi bắt đầu được đẩy lên.</p></div></li>' +
+            '<li><span>4</span><div><strong>Chưa làm, câu khó, đánh dấu</strong><p>Đây là các tín hiệu bổ sung để không bỏ sót phần mới.</p></div></li>' +
+          '</ul></div></section>' +
+          '<section class="panel"><div class="panel-head"><div><h2>Đi tiếp</h2><p>Mở nhanh các danh sách liên quan.</p></div></div><div class="panel-body"><div class="smart-links">' +
+            '<button class="button button-secondary button-block" type="button" data-route="bank">' + icon("layers") + 'Tra cứu ngân hàng</button>' +
+            '<button class="button button-secondary button-block" type="button" data-route="bookmarks">' + icon("bookmark") + 'Câu đánh dấu (' + store.bookmarks.length + ')</button>' +
+            '<button class="button button-secondary button-block" type="button" data-route="notebook">' + icon("book") + 'Sổ công thức</button>' +
+          '</div></div></section>' +
+        '</aside>' +
+      '</div>';
   }
 
   /* ---------------------------------------------------------
@@ -1579,7 +1924,6 @@
       '</div>' +
       '<div class="notice" style="margin-top:16px">' + icon("shield") + '<span>Ứng dụng chạy hoàn toàn ngoại tuyến. Nội dung câu hỏi và công thức được biên soạn dựa trên slide bài giảng Trường điện từ, Chương 1–6. Đây là công cụ tự ôn tập, không thay thế tài liệu chính thức của môn học.</span></div>';
   }
-
   /* ---------------------------------------------------------
      Notifications & modal
      --------------------------------------------------------- */
@@ -1718,18 +2062,21 @@
      --------------------------------------------------------- */
 
   function startPracticeFromSetup() {
-    const selected = state.practiceSetup.chapter;
-    const pool = selected === "all" ? QUESTIONS : questionsForChapter(selected);
+    const setup = normalizePracticeSetup();
+    const pool = practicePool();
     if (!pool.length) {
       showToast("Phạm vi này chưa có câu hỏi.", "error");
       return;
     }
-    const count = Math.min(Number(state.practiceSetup.count) || 10, pool.length);
+    const count = Math.min(Number(setup.count) || 10, pool.length);
     const sampled = store.settings.shuffleQuestions ? shuffle(pool).slice(0, count) : pool.slice(0, count);
-    const chapter = selected === "all" ? null : CHAPTER_MAP.get(Number(selected));
+    const chapter = setup.chapter === "all" ? null : CHAPTER_MAP.get(Number(setup.chapter));
+    const parts = [chapter ? "Luyện " + chapter.title : "Luyện tổng hợp 6 chương"];
+    if (setup.difficulty !== "all") parts.push(difficultyLabel(setup.difficulty));
+    if (setup.topicGroup !== "all") parts.push(setup.topicGroup);
     startPracticeSession(
       sampled.map((question) => question.id),
-      chapter ? "Luyện " + chapter.title : "Luyện tổng hợp 6 chương",
+      parts.join(" · "),
       "practice",
       "practice"
     );
@@ -1828,7 +2175,7 @@
         state.practice = null;
         state.exam = null;
         state.result = null;
-        state.practiceSetup = { chapter: 1, count: 10 };
+        state.practiceSetup = { chapter: 1, difficulty: "all", topicGroup: "all", count: 10 };
         state.examSetup = { chapters: CHAPTERS.map((chapter) => chapter.number), count: 20, duration: 30 };
         applyTheme(store.theme);
         state.view = "dashboard";
@@ -1900,17 +2247,27 @@
     switch (action) {
       case "open-chapter": {
         state.practiceSetup.chapter = Number(dataset.chapter);
+        state.practiceSetup.difficulty = "all";
+        state.practiceSetup.topicGroup = "all";
         requestNavigate("practice");
         break;
       }
       case "hero-start": {
         const weakest = getWeakestChapter();
         state.practiceSetup.chapter = weakest ? weakest.chapter.number : 1;
+        state.practiceSetup.difficulty = "all";
+        state.practiceSetup.topicGroup = "all";
         requestNavigate("practice");
         break;
       }
       case "pick-practice-chapter": {
         state.practiceSetup.chapter = dataset.chapter === "all" ? "all" : Number(dataset.chapter);
+        state.practiceSetup.topicGroup = "all";
+        render();
+        break;
+      }
+      case "pick-practice-difficulty": {
+        state.practiceSetup.difficulty = ["easy", "medium", "hard"].includes(dataset.difficulty) ? dataset.difficulty : "all";
         render();
         break;
       }
@@ -2100,10 +2457,37 @@
       case "practice-single": {
         const question = QUESTION_MAP.get(dataset.id);
         if (!question) break;
-        const mode = dataset.mode === "bookmarks" ? "bookmarks" : "wrong";
+        const mode = ["bookmarks", "smart", "bank"].includes(dataset.mode) ? dataset.mode : "wrong";
         startPracticeSession([question.id], "Luyện câu Chương " + question.chapter, mode, mode);
         break;
       }
+      case "start-smart": {
+        const candidates = smartCandidates().slice(0, Math.max(1, Number(state.smartCount) || 20));
+        if (!candidates.length) {
+          showToast("Chưa có câu hỏi để ôn.", "error");
+          break;
+        }
+        startPracticeSession(
+          candidates.map((candidate) => candidate.question.id),
+          "Ôn tập thông minh · " + candidates.length + " câu ưu tiên",
+          "smart",
+          "smart"
+        );
+        break;
+      }
+      case "pick-smart-count":
+        state.smartCount = Number(dataset.count);
+        render();
+        break;
+      case "bank-load-more":
+        state.bankLimit += 20;
+        renderBankResults();
+        break;
+      case "reset-bank-filters":
+        state.bankFilter = { query: "", chapter: "all", difficulty: "all", topicGroup: "all", status: "all" };
+        state.bankLimit = 20;
+        render();
+        break;
       case "remove-wrong":
         delete store.wrong[dataset.id];
         saveStore();
@@ -2210,7 +2594,6 @@
         break;
     }
   }
-
   /* ---------------------------------------------------------
      Sidebar & global events
      --------------------------------------------------------- */
@@ -2279,6 +2662,8 @@
       const route = routeElement.dataset.route;
       if (route === "practice" && routeElement.dataset.chapter) {
         state.practiceSetup.chapter = Number(routeElement.dataset.chapter);
+        state.practiceSetup.difficulty = "all";
+        state.practiceSetup.topicGroup = "all";
       }
       requestNavigate(route);
       return;
@@ -2293,9 +2678,50 @@
   });
 
   document.addEventListener("input", (event) => {
-    if (event.target && event.target.id === "formula-search") {
+    if (!event.target) return;
+    if (event.target.id === "formula-search") {
       state.notebookQuery = event.target.value;
       renderFormulaResults();
+      return;
+    }
+    if (event.target.id === "bank-search") {
+      state.bankFilter.query = event.target.value;
+      state.bankLimit = 20;
+      renderBankResults();
+    }
+  });
+
+  document.addEventListener("change", (event) => {
+    const target = event.target;
+    if (!target || !target.id) return;
+    if (target.id === "practice-topic") {
+      state.practiceSetup.topicGroup = target.value || "all";
+      render();
+      return;
+    }
+    if (target.id === "bank-chapter") {
+      state.bankFilter.chapter = target.value === "all" ? "all" : Number(target.value);
+      state.bankFilter.topicGroup = "all";
+      state.bankLimit = 20;
+      render();
+      return;
+    }
+    if (target.id === "bank-difficulty") {
+      state.bankFilter.difficulty = target.value || "all";
+      state.bankLimit = 20;
+      renderBankResults();
+      return;
+    }
+    if (target.id === "bank-topic") {
+      state.bankFilter.topicGroup = target.value || "all";
+      state.bankLimit = 20;
+      renderBankResults();
+      return;
+    }
+    if (target.id === "bank-status") {
+      state.bankFilter.status = target.value || "all";
+      state.bankLimit = 20;
+      renderBankResults();
     }
   });
 

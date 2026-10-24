@@ -20,9 +20,9 @@ Sau đó mở `http://localhost:8000`.
 
 ## Nội dung
 
-- **6 chương**, tổng cộng **180 câu hỏi**, mỗi chương 30 câu.
+- **6 chương**, tổng cộng **240 câu hỏi**, mỗi chương 40 câu.
 - Mỗi câu có 4 phương án, một đáp án đúng, giải thích và nguồn tham chiếu dạng `Trang X–Y`.
-- Độ khó: **60 câu cơ bản · 72 câu trung bình · 48 câu khó**.
+- Độ khó: **84 câu cơ bản · 97 câu trung bình · 59 câu khó**.
 - **Sổ công thức**: 57 nhóm, 106 mục công thức, đủ 6 chương; có ghi chú điều kiện áp dụng, nguồn trang và công cụ tìm kiếm không phân biệt dấu tiếng Việt.
 - Nội dung được biên soạn từ 6 file PDF `CHUONG 1.pdf` đến `CHUONG 6.pdf` của học phần. Một số câu bài tập vận dụng trực tiếp các công thức trong slide và có ghi rõ nguồn.
 
@@ -37,7 +37,9 @@ Sau đó mở `http://localhost:8000`.
 ## Chức năng chính
 
 - **Tổng quan**: tiến độ toàn bộ ngân hàng câu hỏi, độ chính xác, chuỗi ngày học, mục tiêu hằng ngày, tiến độ từng chương và gợi ý ôn tập.
-- **Luyện theo chương**: chọn một chương hoặc trộn cả 6 chương; chọn 10, 20 hoặc 30 câu; xem giải thích ngay sau khi trả lời.
+- **Luyện theo chương**: chọn một chương hoặc trộn cả 6 chương; lọc theo độ khó và chủ đề; chọn 10, 20, 30 hoặc 40 câu; xem giải thích ngay sau khi trả lời.
+- **Ngân hàng câu hỏi**: tìm kiếm toàn văn (không phân biệt dấu), lọc theo chương, độ khó, chủ đề và trạng thái; xem đáp án và giải thích ngay trong danh sách.
+- **Ôn thông minh**: ưu tiên câu hay sai, độ chính xác thấp, lâu chưa ôn, câu chưa làm và câu đánh dấu; tạo phiên ôn theo thứ tự ưu tiên.
 - **Thi thử có giờ**: chọn phạm vi chương, 10–40 câu và 10–45 phút; đánh dấu câu để xem lại; nộp bài trước khi hết giờ.
 - **Kết quả và xem lại**: điểm phần trăm, số câu đúng/sai, xem lại từng câu, đáp án đúng và giải thích; mốc đạt là 70%.
 - **Câu đã làm sai**: tự động ghi nhận câu trả lời sai; trả lời đúng lại sẽ xóa khỏi danh sách.
@@ -84,7 +86,7 @@ on-thi-truong-dien-tu/
 │  │  ├─ chapters.js          # Metadata 6 chương
 │  │  └─ formulas.js          # 57 nhóm / 106 mục công thức
 │  └─ questions/
-│     └─ ch1.js … ch6.js      # 30 câu mỗi chương
+│     └─ ch1.js … ch6.js      # 40 câu mỗi chương
 ├─ _src/
 │  └─ part1.js … part6.js     # Mã nguồn có thể chỉnh sửa của app.js
 └─ README.md
