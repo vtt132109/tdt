@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Ứng dụng tự ôn lý thuyết Trường điện từ bằng trắc nghiệm, bám sát 6 chương bài giảng.">
+  <title>Trường điện từ · Ôn thi lý thuyết</title>
+  <link rel="stylesheet" href="assets/katex/katex.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-theme="light">
+  <a class="skip-link" href="#view">Bỏ qua điều hướng</a>
+
+  <svg class="svg-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3.2 2"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M4.8 9.2A8 8 0 0 1 19 7.5"/><path d="M19.2 3.5v4h-4"/><path d="M19.2 14.8A8 8 0 0 1 5 16.5"/><path d="M4.8 20.5v-4h4"/></symbol>
+    <symbol id="i-bookmark" viewBox="0 0 24 24"><path d="M6.5 4.5h11v15l-5.5-3.4-5.5 3.4z"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M5 4.5h9.5A3.5 3.5 0 0 1 18 8v11.5H8.5A3.5 3.5 0 0 1 5 16z"/><path d="M5 4.5v11.5A3.5 3.5 0 0 0 8.5 19.5H18"/><path d="M9 8h5"/></symbol>
+    <symbol id="i-history" viewBox="0 0 24 24"><path d="M4.5 8.5A8.5 8.5 0 1 1 3.5 13"/><path d="M4.5 3.5v5h5"/><path d="M12 8v4.3l2.8 1.7"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M19.2 13.2a7.7 7.7 0 0 0 0-2.4l2-1.5-2-3.4-2.4 1a8 8 0 0 0-2-1.2L14.5 3h-5l-.4 2.7a8 8 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.5a7.7 7.7 0 0 0 0 2.4l-2 1.5 2 3.4 2.4-1a8 8 0 0 0 2 1.2l.4 2.7h5l.4-2.7a8 8 0 0 0 2-1.2l2.4 1 2-3.4z"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 15.2A8.5 8.5 0 0 1 8.8 4 8.5 8.5 0 1 0 20 15.2z"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="M19 12H6M11 6l-6 6 6 6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M4.5 12.5l5 5 10-11"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M8 10l4 4 4-4"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12.2 3.5c.7 3.7-2.8 4.5-2.8 7.2 0 1.1.7 2 1.8 2.3-.1-2.1 1.2-3.3 2.4-4.2-.1 2.6 2.2 3.6 2.2 6.1a4.4 4.4 0 0 1-8.8.2c0-4.2 3.7-6 5.2-11.6z"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M18.5 16l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3.5L20 8l-8 4.5L4 8z"/><path d="M4 12l8 4.5 8-4.5"/><path d="M4 16l8 4.5 8-4.5"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h2"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5l10 6.5-10 6.5z"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M6 21V4.5"/><path d="M6 5h11l-2.2 4L17 13H6z"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.5 7h15"/><path d="M9 7V4.5h6V7"/><path d="M6.5 7l.8 13h9.4l.8-13"/><path d="M10 11v5M14 11v5"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3.5v11"/><path d="M7.5 10.5L12 15l4.5-4.5"/><path d="M4.5 19.5h15"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3.8L21 20H3z"/><path d="M12 9v5"/><circle cx="12" cy="17.2" r=".8" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5.5c0 4.5-3 7.6-7 9.5-4-1.9-7-5-7-9.5V6z"/><path d="M8.7 12l2.2 2.2 4.4-4.5"/></symbol>
+  </svg>
+
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Điều hướng chính">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <span class="brand-wave"></span>
+          <span class="brand-dot"></span>
+        </div>
+        <div class="brand-text">
+          <strong>Trường điện từ</strong>
+          <span>Ôn thi lý thuyết</span>
+        </div>
+      </div>
+
+      <nav class="side-nav" aria-label="Các mục">
+        <p class="nav-label">Không gian học</p>
+        <button class="nav-item is-active" type="button" data-route="dashboard">
+          <svg class="icon"><use href="#i-grid"></use></svg>
+          <span>Tổng quan</span>
+        </button>
+        <button class="nav-item" type="button" data-route="practice">
+          <svg class="icon"><use href="#i-target"></use></svg>
+          <span>Luyện theo chương</span>
+        </button>
+        <button class="nav-item" type="button" data-route="exam">
+          <svg class="icon"><use href="#i-clock"></use></svg>
+          <span>Thi thử có giờ</span>
+        </button>
+
+        <p class="nav-label">Ôn tập thông minh</p>
+        <button class="nav-item" type="button" data-route="wrong">
+          <svg class="icon"><use href="#i-refresh"></use></svg>
+          <span>Câu đã làm sai</span>
+          <span class="nav-count" id="wrong-count" hidden>0</span>
+        </button>
+        <button class="nav-item" type="button" data-route="bookmarks">
+          <svg class="icon"><use href="#i-bookmark"></use></svg>
+          <span>Câu đánh dấu</span>
+          <span class="nav-count" id="bookmark-count" hidden>0</span>
+        </button>
+        <button class="nav-item" type="button" data-route="notebook">
+          <svg class="icon"><use href="#i-book"></use></svg>
+          <span>Sổ công thức</span>
+        </button>
+        <button class="nav-item" type="button" data-route="history">
+          <svg class="icon"><use href="#i-history"></use></svg>
+          <span>Lịch sử học</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-progress" id="sidebar-progress">
+        <div class="sidebar-progress-top">
+          <span>Tiến độ ngân hàng câu hỏi</span>
+          <strong id="sidebar-progress-value">0%</strong>
+        </div>
+        <div class="progress-track"><span id="sidebar-progress-bar" style="width:0%"></span></div>
+        <p id="sidebar-progress-caption">180 câu · 6 chương</p>
+      </div>
+
+      <div class="sidebar-footer">
+        <button class="nav-item nav-settings" type="button" data-route="settings">
+          <svg class="icon"><use href="#i-settings"></use></svg>
+          <span>Cài đặt</span>
+        </button>
+        <p class="sidebar-credit">Bám sát slide bài giảng<br>Chương 1 – 6</p>
+      </div>
+    </aside>
+
+    <div class="sidebar-backdrop" id="sidebar-backdrop" hidden></div>
+
+    <div class="main-shell">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="icon-button menu-button" id="menu-button" type="button" aria-label="Mở điều hướng" aria-expanded="false" aria-controls="sidebar">
+            <svg class="icon"><use href="#i-menu"></use></svg>
+          </button>
+          <div class="breadcrumb" aria-live="polite">
+            <span class="breadcrumb-root">Trường điện từ</span>
+            <span class="breadcrumb-sep">/</span>
+            <strong id="current-view-label">Tổng quan</strong>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button class="icon-button theme-toggle" id="theme-toggle" type="button" aria-label="Chuyển sang giao diện tối">
+            <svg class="icon theme-icon-light"><use href="#i-moon"></use></svg>
+            <svg class="icon theme-icon-dark"><use href="#i-sun"></use></svg>
+          </button>
+          <button class="button button-primary topbar-cta" type="button" data-route="exam">
+            <svg class="icon"><use href="#i-clock"></use></svg>
+            <span>Thi thử</span>
+          </button>
+        </div>
+      </header>
+
+      <main class="view" id="view" tabindex="-1"></main>
+    </div>
+  </div>
+
+  <div class="toast-region" id="toast-region" role="status" aria-live="polite"></div>
+  <div id="modal-root"></div>
+
+  <noscript>
+    <div class="noscript">Ứng dụng cần JavaScript để hoạt động. Hãy bật JavaScript trong trình duyệt.</div>
+  </noscript>
+
+  <script src="js/data/chapters.js"></script>
+  <script src="js/data/formulas.js"></script>
+  <script src="js/questions/ch1.js"></script>
+  <script src="js/questions/ch2.js"></script>
+  <script src="js/questions/ch3.js"></script>
+  <script src="js/questions/ch4.js"></script>
+  <script src="js/questions/ch5.js"></script>
+  <script src="js/questions/ch6.js"></script>
+  <script src="assets/katex/katex.min.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
